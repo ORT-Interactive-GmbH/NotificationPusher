@@ -80,6 +80,11 @@ class Apns extends BaseAdapter
 
             if (ServiceResponse::RESULT_OK === $this->response->getCode()) {
                 $pushedDevices->add($device);
+            } else if(in_array($this->response->getCode(), array(ServiceResponse::RESULT_INVALID_TOKEN_SIZE, ServiceResponse::RESULT_INVALID_TOKEN))) {
+                // reconnect
+                $this->openedClient->close();
+                $this->openedClient = null;
+                $client = $this->getOpenedServiceClient();
             }
         }
 
